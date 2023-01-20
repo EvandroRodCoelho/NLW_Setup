@@ -2,7 +2,7 @@
 import { Header } from './components/Header';
 import { SummaryComponent } from './components/SummaryTable';
 import './styles/global.css'
-
+import './lib/dayjs'
 export function App() {
 
   return (

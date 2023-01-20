@@ -1,6 +1,8 @@
-import { Check } from "phosphor-react";
+import { Check } from 'phosphor-react';
 import * as Checkbox from '@radix-ui/react-checkbox';
 import { FormEvent, useState } from "react";
+import { api } from '../../lib/axios';
+import axios from 'axios';
 
 const availableWeekDays = [
   'Domingo',
@@ -13,18 +15,28 @@ const availableWeekDays = [
 ]
 export function NewHabitForm() {
   const [title, setTitle] = useState('');
-  const [weekDays , setWekDays] = useState<number[]>([]);
-  function createNewHabit(event:FormEvent) {
+  const [WeekDays , setWekDays] = useState<number[]>([]);
+  async function createNewHabit(event:FormEvent) {
     event.preventDefault();
+    if (!title || WeekDays.length == 0) {
+      return;
+    }
 
+   await api.post('habits', {
+      title,
+      WeekDays
+   })
+    setTitle('');
+    setWekDays([]);
+    alert('hábito criado com sucesso');
   }
 
   function handleToggleWeekDay(weekDay:number) {
-    if (weekDays.includes(weekDay)) {
-      const weekDaysWithRemovedOne = weekDays.filter(day => day !== weekDay);
+    if (WeekDays.includes(weekDay)) {
+      const weekDaysWithRemovedOne = WeekDays.filter(day => day !== weekDay);
       setWekDays(weekDaysWithRemovedOne);
     } else {
-      const weekDaysAddOne = [...weekDays, weekDay];
+      const weekDaysAddOne = [...WeekDays, weekDay];
       setWekDays(weekDaysAddOne);
     }
   }
@@ -35,6 +47,7 @@ export function NewHabitForm() {
       <input id='title'
         placeholder='ex: Exercícios, dormir bem , etc... '
         autoFocus
+        value={title}
         className='p-4 rounded-lg mt-3 bg-zinc-800 text-white placeholder:text-zinc-400'
         onChange={event => setTitle(event.target.value)}
       />
@@ -48,6 +61,7 @@ export function NewHabitForm() {
           <Checkbox.Root
             key={weekDay}
             className='flex items-center gap-3 group'
+            checked={WeekDays.includes(index)}
             onCheckedChange={()=> handleToggleWeekDay(index) }
           >
             <div className='flex h-8 w-8 rounded-lg items-center justify-center bg-zinc-900 border-2 border-zinc-800 group-data-[state=checked]:bg-green-500 group-data-[state=checked]:border-green-500'>

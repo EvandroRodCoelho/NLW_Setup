@@ -1,12 +1,26 @@
+import dayjs from 'dayjs';
+import { useEffect, useState } from 'react';
+import { api } from '../../lib/axios';
 import { generateDatefromYearBenning } from '../../utils/generate-date-from-year-benning';
 import { HabitDay } from '../HabitDay';
 
+type SummaryType = {
+  id: string;
+  date: string;
+  amount: number;
+  completed: number;
+}[]
 const weekDays = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 const summaryDates = generateDatefromYearBenning();
 const minimumSummaryDatesSize = 16 * 7;
 const amountOfDaysToFill = minimumSummaryDatesSize - summaryDates.length;
 export function SummaryComponent() {
-
+  const [summary, setSummary] = useState<SummaryType>([]);
+  useEffect(() => {
+    api.get('summary').then(response => {
+      setSummary(response.data);
+    })
+  },[])
   return (
     <div className="w-full flex">
       <div className="grid grid-rows-7 grid-flow-row gap-3 ">
@@ -22,9 +36,14 @@ export function SummaryComponent() {
       </div>
       <div className="grid grid-rows-7 grid-flow-col gap-2">
         {summaryDates.map(date => {
+
+          const dayInSummary = summary.find(day => {
+            return dayjs(date).isSame(day.date, 'day');
+          })
           return (
-            <HabitDay amount={5}
-              completed={Math.round(Math.random() * 5)}
+            <HabitDay amount={dayInSummary?.amount}
+              date={date}
+              completed={dayInSummary?.completed}
               key={date.toString()} />
           );
         })}
