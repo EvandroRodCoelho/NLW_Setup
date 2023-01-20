@@ -5,8 +5,8 @@ import {
   Inter_800ExtraBold
 } from '@expo-google-fonts/inter';
 import { Loading } from './src/components/Loading';
-import { Home } from './src/screens/Home';
-
+import { Routes } from './src/routes';
+import './src/lib/dayjs';
 export default function App() {
   const [fontsLoaded] = useFonts({
     Inter_400Regular,
@@ -21,7 +21,7 @@ export default function App() {
   }
   return (
     <>
-      <Home />
+      <Routes />
       <StatusBar style="auto" />
     </>
   );
