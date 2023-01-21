@@ -21,7 +21,7 @@ export function HabitDay({ amount = 0, defaultCompleted = 0, date }: HabitDayPro
   }
   return (
   <Popover.Root>
-      <Popover.Trigger className={clsx(' w-10 h-10 text-white rounded m-2 text-left flex items-center justify-center', {
+      <Popover.Trigger className={clsx(' w-10 h-10 text-white rounded m-2 text-left flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-violet-700 focus:ring-offset-2 focus:ring-offset-background', {
         'bg-zinc-900 border-zinc-800': completedPercentage === 0,
         'bg-violet-900 border-violet-700': completedPercentage > 20 && completedPercentage < 20,
         'bg-violet-800 border-violet-600': completedPercentage >= 20 && completedPercentage < 40,
