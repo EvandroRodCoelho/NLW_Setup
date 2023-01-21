@@ -47,7 +47,7 @@ export async function appRoutes(app: FastifyInstance) {
         }
       }
     });
-    const day = await prisma.day.findUnique({
+    const day = await prisma.day.findFirst({
       where: {
         date: parsedDate.toDate(),
       },
@@ -56,8 +56,9 @@ export async function appRoutes(app: FastifyInstance) {
       }
     });
     const completedHabits = day?.DayHabits.map(dayHabit => {
-      return dayHabit.id;
-    });
+      return dayHabit.habit_Id;
+    }) ?? [];
+
     return {
       possibleHabits,
       completedHabits
@@ -65,25 +66,27 @@ export async function appRoutes(app: FastifyInstance) {
   });
 
   // Route for  complete or not complete  a habit
+
   app.patch('/habits/:id/toggle', async (request) => {
+
     const toggleHabitParams = z.object({
-      id: z.string().uuid(),
+      id: z.string().uuid()
     });
 
     const { id } = toggleHabitParams.parse(request.params);
+
     const today = dayjs().startOf('day').toDate();
 
     let day = await prisma.day.findUnique({
       where: {
-        date: today,
+        date: today
       }
     });
-
 
     if (!day) {
       day = await prisma.day.create({
         data: {
-          date :today
+          date: today
         }
       });
     }
@@ -96,6 +99,7 @@ export async function appRoutes(app: FastifyInstance) {
         }
       }
     });
+
     if (dayHabit) {
       await prisma.dayHabit.delete({
         where: {
@@ -109,9 +113,9 @@ export async function appRoutes(app: FastifyInstance) {
           habit_Id: id
         }
       });
-
     }
   });
+
 
   app.get('/summary', async () => {
     const summary = await prisma.$queryRaw`
