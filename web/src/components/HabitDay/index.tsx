@@ -1,19 +1,24 @@
 import * as Popover from '@radix-ui/react-popover';
 import clsx from 'clsx';
 import { ProgressBar } from '../ProgressBar';
-import * as Checkbox from '@radix-ui/react-checkbox';
-import { Check } from 'phosphor-react';
 import dayjs from 'dayjs';
+import { HabitsList } from '../HabitsList';
+import { useState } from 'react';
 
 interface HabitDayProps {
   date: Date;
   amount?: number;
-  completed?: number;
+  defaultCompleted?: number;
 }
-export function HabitDay({ amount = 0 ,completed = 0, date}:HabitDayProps) {
+
+export function HabitDay({ amount = 0, defaultCompleted = 0, date }: HabitDayProps) {
+  const [completed, setCompleted] = useState(defaultCompleted);
   const completedPercentage = amount > 0 ? Math.round((completed / amount) * 100) : 0;
   const dayAndMouth = dayjs(date).format('DD/MM');
-  const dayOfWeek = dayjs(date).format('dddd')
+  const dayOfWeek = dayjs(date).format('dddd');
+  function handleCompletedChanged(completed:number) {
+    setCompleted(completed);
+  }
   return (
   <Popover.Root>
       <Popover.Trigger className={clsx(' w-10 h-10 text-white rounded m-2 text-left flex items-center justify-center', {
@@ -26,24 +31,12 @@ export function HabitDay({ amount = 0 ,completed = 0, date}:HabitDayProps) {
       }) } />
 
     <Popover.Portal>
-      <Popover.Content className='min-w-[320px] p-6 rounded-2xl flex flex-col bg-zinc-900'>
-          <span className='font-semibold text-zinc-400'>{ dayOfWeek}</span>
-          <span className='mt-1 font-extrabold leading-tight text-3xl'>{dayAndMouth}</span>
-
-          <ProgressBar progress={completedPercentage} />
-          <div className='mt-6 flex flex-col gap-3'>
-            <Checkbox.Root className='flex items-center gap-3 group'>
-              <div className='flex h-8 w-8 rounded-lg items-center justify-center bg-zinc-900 border-2 border-zinc-800 group-data-[state=checked]:bg-green-500 group-data-[state=checked]:border-green-500'>
-                <Checkbox.Indicator>
-                  <Check  size={24} className='text-white'/>
-                </Checkbox.Indicator>
-              </div>
-              <span className='group-data-[state=checked]:line-through group-data-[state=checked]:text-zinc-400 text-xl font-semibold text-white leading-tight'>
-                Beber 2L de água
-              </span>
-            </Checkbox.Root>
-          </div>
-          <Popover.Arrow height={8} width={16} className='fill-zinc-900'/>
+      <Popover.Content className='min-w-[320px] bg-zinc-900 p-6 rounded-2xl flex flex-col'>
+        <span className='font-semibold text-zinc-400'>{ dayOfWeek}</span>
+        <span className='mt-1 font-extrabold leading-tight text-3xl'>{dayAndMouth}</span>
+        <ProgressBar progress={completedPercentage} />
+        <HabitsList date={date} onCompletedChanged={handleCompletedChanged} />
+        <Popover.Arrow height={8} width={16} className='fill-zinc-900'/>
       </Popover.Content>
     </Popover.Portal>
   </Popover.Root>
